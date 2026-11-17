@@ -120,7 +120,12 @@
   }
   $('#heroNext').addEventListener('click', () => heroGo(hi + 1));
   $('#heroPrev').addEventListener('click', () => heroGo(hi - 1));
+  let heroPaused = false, pauseAt = 0;
+  const heroCard = $('.hero__card');
+  heroCard.addEventListener('mouseenter', () => { heroPaused = true; pauseAt = performance.now(); });
+  heroCard.addEventListener('mouseleave', () => { heroPaused = false; hStart += performance.now() - pauseAt; });
   (function heroLoop(t) {
+    if (heroPaused) { requestAnimationFrame(heroLoop); return; }
     const p = Math.min((t - hStart) / H_DUR, 1);
     hBar.style.width = p * 100 + '%';
     if (p >= 1 && !document.hidden) heroGo(hi + 1);
@@ -378,7 +383,15 @@
     }, 350);
     restartCases();
   }
-  function restartCases() { clearInterval(caseTimer); caseTimer = setInterval(() => caseGo(ci + 1), 7000); }
+  let casePaused = false;
+  function restartCases() { clearInterval(caseTimer); caseTimer = setInterval(() => { if (!casePaused && !document.hidden) caseGo(ci + 1); }, 7000); }
+  caseBox.addEventListener('mouseenter', () => { casePaused = true; });
+  caseBox.addEventListener('mouseleave', () => { casePaused = false; });
+  caseBox.addEventListener('touchstart', () => { casePaused = true; }, { passive: true });
+  // свайп по кейсу на телефоне
+  let tx = 0;
+  caseBox.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }, { passive: true });
+  caseBox.addEventListener('touchend', (e) => { const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) caseGo(ci + (dx < 0 ? 1 : -1)); }, { passive: true });
   $('#caseNext').addEventListener('click', () => caseGo(ci + 1));
   $('#casePrev').addEventListener('click', () => caseGo(ci - 1));
   $$('button', dots).forEach((d, i) => d.addEventListener('click', () => caseGo(i)));
@@ -415,7 +428,7 @@
     if (!c) return;
     if (c.dataset.book) {
       const nameIn = $('#leadForm [name=name]');
-      setTimeout(() => { toast(`Бронь: ${c.dataset.book}`, 'Оставьте телефон — закрепим авто за вами'); $('#phone').focus({ preventScroll: true }); }, 600);
+      wantCar(c.dataset.book);
       nameIn && (nameIn.placeholder = 'Ваше имя');
     }
     closeModal();
@@ -456,6 +469,18 @@
     requestAnimationFrame(() => requestAnimationFrame(() => { $('#pdfBar').style.width = '100%'; }));
     setTimeout(() => { const d = $('#pdfDone'); d && (d.style.opacity = 1); }, 1600);
   });
+
+  /* ---------- «Хочу такой» в блоке цен ---------- */
+  function wantCar(name) {
+    setTimeout(() => {
+      toast(`Выбрано: ${name}`, 'Оставьте имя и телефон — пришлём точный расчёт');
+      const n = $('#leadForm [name=name]'); n && n.focus({ preventScroll: true });
+    }, 650);
+  }
+  $$('.offer .btn').forEach((b) => b.addEventListener('click', () => {
+    const o = b.closest('.offer');
+    wantCar(`${$('.offer__brand', o).textContent} ${$('.offer__model', o).textContent}`);
+  }));
 
   /* ---------- Форма заявки ---------- */
   const phone = $('#phone');

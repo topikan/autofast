@@ -437,7 +437,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; bord
 .why__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
 .why__item { padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 14px; transition: border-color .4s, background .4s; }
 .why__item:hover { border-color: rgba(91,156,255,.35); background: rgba(91,156,255,.05); }
-.why__item h4 { font-size: 17px; }
+.why__item h4 { font-size: 17px; margin-bottom: 6px; }
 .why__item p { font-size: 14px; color: var(--muted); }
 .why__visual { grid-column: span 5; border-radius: var(--radius); background-size: cover; background-position: 35% center; position: relative; overflow: hidden; min-height: 420px; display: flex; align-items: flex-end; border: 1px solid var(--border); }
 .why__visual::before { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(6,8,12,.95) 0%, rgba(6,8,12,.2) 60%, rgba(6,8,12,.4) 100%); }
@@ -677,4 +677,148 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; bord
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
+}
+
+/* ==========================================================
+   Удобство: фокус, слайдеры, компактный мобильный режим
+   ========================================================== */
+:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; border-radius: 8px; }
+.btn:focus-visible, .round-btn:focus-visible, .chip:focus-visible { border-radius: 999px; }
+.car:focus-visible { outline-offset: 2px; border-radius: var(--radius); }
+
+@media (max-width: 960px) {
+  .fab__btn { width: 48px; height: 48px; }
+  .fab__btn svg { width: 22px; height: 22px; }
+}
+
+@media (max-width: 640px) {
+  :root { --section: 60px; }
+  .h2 { font-size: 28px; }
+  .section-head { margin-bottom: 22px; gap: 14px; }
+  .section-head .muted { margin-top: 8px; font-size: 15px; }
+  .center { margin-top: 24px; }
+
+  /* Горизонтальные слайдеры: отступ от края и привязка по контейнеру */
+  .cars, .offers, .reviews { scroll-padding-inline: var(--pad); }
+  .cars { gap: 12px; }
+  .car { flex: 0 0 76%; }
+  .car__media { aspect-ratio: 16 / 9; }
+  .car__badges { top: 10px; left: 10px; right: 10px; }
+  .car__body { padding: 2px 16px 16px; gap: 8px; }
+  .car__name { font-size: 16px; }
+  .car__specs { gap: 10px; font-size: 12px; }
+  .car__foot { padding-top: 10px; }
+  .car__price { font-size: 17px; }
+  .car .round-btn { width: 36px; height: 36px; }
+
+  .offers { gap: 12px; }
+  .offer { flex: 0 0 72%; padding: 18px; gap: 6px; }
+  .offer__top { margin-bottom: 8px; }
+  .offer__model { font-size: 26px; }
+  .offer__note { min-height: 0; }
+  .offer__price { font-size: 22px; margin: 8px 0 12px; padding-top: 12px; }
+
+  /* Hero */
+  .hero { min-height: auto; padding: calc(var(--header-h) + 22px) 0 28px; }
+  .hero__content { gap: 16px; }
+  .pill { padding: 6px 12px; font-size: 12px; }
+  .hero__title { font-size: 34px; }
+  .hero__lead { font-size: 15px; }
+  .hero__perks { gap: 10px; }
+  .hero__perks .ico { width: 34px; height: 34px; border-radius: 10px; }
+  .hero__perks .ico svg { width: 17px; height: 17px; }
+  .hero__perks small { display: none; }
+  .hero__cta { gap: 12px; flex-wrap: nowrap; width: 100%; margin-top: 2px; }
+  .hero__cta .btn--lg { --h: 52px; flex: 1; width: auto; padding: 0 18px; }
+  .play-link > span:last-child { display: none; }
+  .play-link__btn { width: 52px; height: 52px; }
+  .hero__card { margin-top: 22px; padding: 16px; }
+  .hero__card-top { margin-bottom: 8px; }
+  .hero__card-model { font-size: 17px; }
+  .hero__card-bottom { margin-top: 10px; }
+  .hero__card-price { font-size: 19px; }
+  .hero__progress { margin-top: 12px; }
+  .hero__card .round-btn { width: 40px; height: 40px; }
+  .stats { margin-top: 24px; padding-top: 18px; row-gap: 16px; }
+  .stat b { font-size: 26px; }
+  .marquee { padding: 14px 0; }
+  .marquee span { font-size: 18px; }
+
+  /* Калькулятор */
+  .calc__intro { margin-bottom: 18px; }
+  .calc__form { gap: 12px; }
+  .field { gap: 6px; }
+  .input, .select select { height: 46px; font-size: 15px; }
+  .line { padding: 7px 0; font-size: 13px; }
+  .line em { display: none; }
+  .calc__result { margin-top: 18px; gap: 12px; }
+  .result-card { gap: 10px; }
+  .note { padding: 14px; }
+
+  /* Страны */
+  .country { min-height: 190px; padding: 18px; }
+  .country__body h3 { font-size: 22px; margin-bottom: 4px; }
+  .country__body p { font-size: 13px; }
+  .country__meta { margin-top: 8px; }
+  .flag--lg { width: 32px; height: 22px; }
+  .country .round-btn { right: 14px; top: 14px; }
+
+  /* Шаги — компактный список */
+  .steps { grid-template-columns: 1fr; row-gap: 0; }
+  .step { display: grid; grid-template-columns: 44px 1fr; column-gap: 14px; row-gap: 2px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: 0; }
+  .step__num { display: none; }
+  .step__ico { width: 44px; height: 44px; grid-row: span 2; }
+  .step__ico svg { width: 19px; height: 19px; }
+  .step h4 { font-size: 15px; }
+  .step h4 br { display: none; }
+  .step small { font-size: 12px; }
+
+  /* Сделки */
+  .case__media { aspect-ratio: 16 / 10; }
+  .case__info { padding: 16px 6px 6px; gap: 8px; }
+  .case__price { font-size: 28px; margin-top: 4px; }
+  .case__meta { font-size: 14px; }
+  .case__dots { margin-top: 10px; }
+
+  /* Отзывы — горизонтальный слайдер */
+  .reviews { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 calc(var(--pad) * -1); padding: 4px var(--pad) 12px; gap: 12px; scrollbar-width: none; }
+  .reviews::-webkit-scrollbar { display: none; }
+  .review { flex: 0 0 82%; scroll-snap-align: start; }
+  .review:hover { transform: none; }
+  .review__thumb { aspect-ratio: 16 / 10; }
+  .review--quote, .review--rating { padding: 18px; }
+  .review__big { font-size: 48px; }
+  .rate { padding: 14px 0; }
+
+  /* Преимущества */
+  .why__list { gap: 22px; }
+  .why__grid { gap: 10px; }
+  .why__grid .why__item { flex-direction: row; align-items: flex-start; gap: 14px; padding: 16px; }
+  .why__item .ico--lg { width: 42px; height: 42px; border-radius: 12px; }
+  .why__item .ico--lg svg { width: 20px; height: 20px; }
+  .why__item h4 { font-size: 15px; margin-bottom: 4px; }
+  .why__item p { font-size: 13px; }
+  .why__visual { min-height: 220px; }
+  .why__visual-body { padding: 20px; }
+  .why__visual-body h3 { font-size: 24px; }
+
+  /* FAQ, заявка, подвал */
+  .faq-aside { gap: 12px; margin-bottom: 6px; }
+  .lead { padding: 24px 18px; }
+  .lead__content { gap: 12px; }
+  .lead__side { margin-top: 18px; gap: 10px; }
+  .footer { padding: 44px 0 90px; margin-top: 30px; }
+  .footer__bottom { margin-top: 32px; }
+  .fab { right: 14px; bottom: 14px; gap: 8px; }
+  .fab__btn { width: 46px; height: 46px; }
+}
+
+/* Ноутбуки с невысоким экраном: CTA должна быть видна на первом экране */
+@media (min-width: 961px) and (max-height: 860px) {
+  .hero { padding-top: calc(var(--header-h) + 28px); }
+  .hero__content { gap: 18px; }
+  .hero__title { font-size: clamp(40px, 4.4vw, 62px); }
+  .hero__lead { font-size: 16px; }
+  .stats { margin-top: 36px; padding-top: 22px; }
 }
