@@ -446,7 +446,9 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; bord
 .why__visual-body p { color: rgba(238,242,248,.75); font-size: 15px; }
 
 /* ---------- FAQ ---------- */
-.faq { display: grid; grid-template-columns: 1fr 1fr; gap: 12px var(--gutter); align-items: start; }
+.faq-wrap { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gutter); align-items: start; }
+.faq-aside { grid-column: span 4; position: sticky; top: calc(var(--header-h) + 24px); display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+.faq { grid-column: 6 / span 7; display: flex; flex-direction: column; gap: 12px; }
 .faq__item { border-radius: 16px; border: 1px solid var(--border); background: var(--surface); transition: border-color .3s, background .3s; }
 .faq__item[open] { border-color: rgba(91,156,255,.35); background: rgba(91,156,255,.05); }
 .faq__item summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 22px; font-weight: 600; font-size: 16px; }
@@ -573,6 +575,9 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; bord
   .case__info { padding: 24px 8px 8px; }
   .why__list, .why__visual { grid-column: span 12; }
   .why__visual { min-height: 320px; }
+  .faq-aside { grid-column: span 12; position: static; }
+  .faq { grid-column: span 12; }
+  .faq-aside .h2 br { display: none; }
   .lead { padding: 40px; }
   .lead__content, .lead__side { grid-column: span 12; }
   .lead__side { flex-direction: row; margin-top: 24px; }
@@ -612,8 +617,10 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; bord
   .review { grid-column: span 12; }
   .review__thumb { aspect-ratio: 16 / 10; flex: none; }
   .why__grid { grid-template-columns: 1fr; }
-  .faq { grid-template-columns: 1fr; }
+  .faq-aside, .faq { grid-column: span 12; }
+  .faq-aside { position: static; }
   .faq__item summary { font-size: 15px; padding: 18px; }
+  .faq__body p { padding: 0 18px 18px; }
   .lead { padding: 28px 20px; border-radius: 22px; }
   .lead::before { background: linear-gradient(0deg, rgba(6,8,12,.97) 35%, rgba(6,8,12,.75) 100%); }
   .lead__form { grid-template-columns: 1fr; }
