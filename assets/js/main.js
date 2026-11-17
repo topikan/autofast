@@ -8,6 +8,19 @@
   const isTouch = matchMedia('(hover: none)').matches;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ---------- Прелоадер (один раз за сессию) ---------- */
+  const pre = $('#preloader');
+  let seen = false;
+  try { seen = sessionStorage.getItem('af_seen') === '1'; sessionStorage.setItem('af_seen', '1'); } catch (e) {}
+  const revealDelay = (seen || reduce) ? 0 : 1000;
+  if (seen || reduce) { pre.remove(); }
+  else {
+    const t0 = performance.now();
+    const done = () => setTimeout(() => { pre.classList.add('is-done'); setTimeout(() => pre.remove(), 700); }, Math.max(0, 1100 - (performance.now() - t0)));
+    if (document.readyState === 'complete') done(); else addEventListener('load', done);
+    setTimeout(() => pre.isConnected && pre.classList.add('is-done'), 2600);
+  }
+
   /* ---------- Toast ---------- */
   const toastEl = $('#toast');
   let toastT;
@@ -71,7 +84,7 @@
       io.unobserve(en.target);
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-  $$('.reveal').forEach((el) => io.observe(el));
+  setTimeout(() => $$('.reveal').forEach((el) => io.observe(el)), revealDelay);
 
   function countUp(el) {
     const end = parseFloat(el.dataset.count);

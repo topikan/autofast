@@ -7,7 +7,7 @@
   <meta name="description" content="Авто из Китая и Южной Кореи под заказ: подбор с аукционов и внутреннего рынка, проверка, выкуп, растаможка в Кыргызстане в 2,5–4 раза дешевле и доставка по России и СНГ.">
   <!-- Демо-версия: убрать noindex перед запуском -->
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#07090d">
+  <meta name="theme-color" content="#06080c">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,6 +49,12 @@
   </defs>
 </svg>
 
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__inner">
+    <img src="assets/img/logo-mark.svg" alt="" width="132" height="120">
+    <span>AUTO FAST</span>
+  </div>
+</div>
 <div class="grain" aria-hidden="true"></div>
 <div class="scroll-progress" aria-hidden="true"></div>
 
@@ -56,13 +62,8 @@
 <header class="header" id="header">
   <div class="container header__inner">
     <a href="#top" class="logo" aria-label="AUTO FAST — на главную">
-      <svg class="logo__mark" viewBox="0 0 40 28" aria-hidden="true">
-        <defs><linearGradient id="lg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#9cc2ff"/><stop offset="1" stop-color="#3f7dff"/></linearGradient></defs>
-        <path d="M2 26 15 2h7L9 26H2Z" fill="url(#lg)"/>
-        <path d="M13 26 24.5 5H31L19.5 26H13Z" fill="url(#lg)" opacity=".75"/>
-        <path d="M24 26l6-11h8l-6 11h-8Z" fill="url(#lg)" opacity=".5"/>
-      </svg>
-      <span>AUTO FAST</span>
+      <img class="logo__mark" src="assets/img/logo-mark.svg" alt="" width="44" height="40">
+      <span class="logo__word">AUTO FAST</span>
     </a>
     <nav class="nav" id="nav">
       <a href="#offers">Цены</a>
@@ -379,7 +380,7 @@
       <div class="case__media">
         <img id="caseImg" src="assets/img/case-ship.webp" alt="Автомобили клиентов на складе" loading="lazy">
         <span class="tag tag--dark case__tag">Реальная сделка</span>
-        <div class="case__counter"><b>200+</b><span>авто привезли<br>за 3 года</span></div>
+        <div class="case__counter"><b class="gold-text">200+</b><span>авто привезли<br>за 3 года</span></div>
       </div>
       <div class="case__info">
         <div class="case__country" id="caseCountry"><i class="flag flag--cn"></i>Китай · Челябинск</div>
@@ -418,7 +419,7 @@
       </article>
 
       <article class="review review--quote reveal">
-        <span class="review__big">2-й</span>
+        <span class="review__big gold-text">2-й</span>
         <p><b>Олег</b> заказал у нас уже второй автомобиль — Geely Monjaro 26 модельного года.</p>
         <p><b>Иван</b> возил Geely Monjaro, а затем его супруга Наталья заказала Voyah Free 318.</p>
         <div class="review__foot"><div><b>Возвращаются</b><small>и советуют близким</small></div></div>
@@ -521,11 +522,12 @@
 
 <!-- ===== FOOTER ===== -->
 <footer class="footer" id="contacts">
+  <img class="footer__mark" src="assets/img/logo-mark.svg" alt="" aria-hidden="true">
   <div class="container footer__top">
     <div class="footer__brand">
       <a href="#top" class="logo">
-        <svg class="logo__mark" viewBox="0 0 40 28" aria-hidden="true"><path d="M2 26 15 2h7L9 26H2Z" fill="url(#lg)"/><path d="M13 26 24.5 5H31L19.5 26H13Z" fill="url(#lg)" opacity=".75"/><path d="M24 26l6-11h8l-6 11h-8Z" fill="url(#lg)" opacity=".5"/></svg>
-        <span>AUTO FAST</span>
+        <img class="logo__mark" src="assets/img/logo-mark.svg" alt="" width="44" height="40">
+        <span class="logo__word">AUTO FAST</span>
       </a>
       <p class="muted">Импорт авто, мототехники и спецтехники из Китая и Южной Кореи в Россию и страны СНГ.</p>
     </div>
