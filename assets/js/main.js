@@ -151,17 +151,17 @@
 
   /* ---------- Калькулятор ---------- */
   const COUNTRY = {
-    cn: { name: 'Китай', cur: '¥', rate: 11.4, min: 50000, max: 800000, step: 5000, delivery: 190000, time: '25–45 дней', img: 'assets/img/car-camry2.webp',
-      models: [['Geely Monjaro', 165000, '2.0', 0], ['Li Auto L7', 285000, '1.5', 0], ['Haval H6', 98000, '1.5', 0], ['Chery Tiggo 8 Pro', 125000, '2.0', 0], ['Toyota Camry', 150000, '2.0', 1]] },
-    kr: { name: 'Корея', cur: '₩', rate: 0.064, min: 5000000, max: 150000000, step: 500000, delivery: 230000, time: '20–30 дней', img: 'assets/img/calc-car.webp',
-      models: [['Kia K5', 21000000, '2.0', 1], ['BMW 5 Series 520d', 39000000, '2.0', 1], ['Hyundai Palisade', 38000000, '4.0', 1], ['Genesis G80', 42000000, '3.0', 1], ['BMW X5 xDrive30d', 62000000, '3.0', 1]] },
-    eu: { name: 'Европа', cur: '€', rate: 99, min: 5000, max: 150000, step: 500, delivery: 380000, time: '30–50 дней', img: 'assets/img/car-gle.webp',
-      models: [['Mercedes-Benz GLE 300d', 62000, '3.0', 1], ['BMW X5 xDrive30d', 55000, '3.0', 1], ['Audi Q7 45 TDI', 52000, '3.0', 1], ['Volkswagen Tiguan', 26000, '2.0', 1], ['Porsche Cayenne', 78000, '3.0', 1]] },
+    cn: { name: 'Китай', cur: '¥', rate: 11.4, min: 40000, max: 600000, step: 1000, delivery: 200000, time: '15–35 дней', img: 'assets/img/car-camry2.webp',
+      models: [['Changan UNI-Z', 82000, '1.5', 0], ['Changan CS55 Plus', 68000, '1.5', 0], ['Geely Monjaro', 150000, '2.0', 0], ['Toyota RAV4 2.0', 145000, '2.0', 0], ['Toyota Highlander', 260000, '2.0', 0], ['Li Auto L7', 285000, '1.5', 0]] },
+    kr: { name: 'Корея', cur: '₩', rate: 0.064, min: 5000000, max: 150000000, step: 500000, delivery: 260000, time: '35–60 дней', img: 'assets/img/calc-car.webp',
+      models: [['Kia K5', 21000000, '2.0', 1], ['BMW 5 Series 520d', 39000000, '2.0', 1], ['Kia Carnival', 33000000, '3.0', 1], ['Genesis G80', 42000000, '3.0', 1], ['Hyundai Palisade', 38000000, '4.0', 1]] },
   };
   const EUR = 99;
   const cc = { '1.5': 1500, '2.0': 2000, '3.0': 3000, '4.0': 3500 };
   const UTIL = { '1.5': [3400, 5200], '2.0': [3400, 5200], '3.0': [745000, 1210000], '4.0': [1350000, 2050000] };
-  const FEE = 90000;
+  const FEE = 100000;
+  const KG = 0.33;   // растаможка в Кыргызстане относительно РФ
+  const DOCS = 40000; // СБКТС + ЭПТС
 
   const tabsWrap = $('#calcTabs'), ink = $('.tabs__ink', tabsWrap);
   const mSel = $('#calcModel'), ySel = $('#calcYear'), eSel = $('#calcEngine');
@@ -182,7 +182,7 @@
     mSel.innerHTML = C.models.map((m, i) => `<option value="${i}">${m[0]}</option>`).concat('<option value="custom">Другой автомобиль</option>').join('');
     range.min = C.min; range.max = C.max; range.step = C.step;
     $('#calcCur').textContent = C.cur;
-    $('#calcRoute').textContent = `(${C.name} → Воронеж)`;
+    $('#calcRoute').textContent = `(${C.name} → Кыргызстан → ваш город)`;
     $('#calcTime').textContent = C.time;
     if (!silent) {
       calcCar.classList.add('is-swapping');
@@ -221,11 +221,12 @@
     const C = COUNTRY[country];
     const price = +String(priceIn.value).replace(/\D/g, '') || 0;
     const age = +ySel.value, vol = eSel.value;
-    const car = price * C.rate;
-    const cust = customs(car / EUR, age, vol) + 12000;
-    const util = UTIL[vol][age === 0 ? 0 : 1];
+    const car = Math.round(price * C.rate / 100) * 100;
+    const custRF = customs(car / EUR, age, vol) + 12000;
+    const cust = Math.round(custRF * KG / 100) * 100;
+    const util = UTIL[vol][age === 0 ? 0 : 1] + DOCS;
     const total = car + C.delivery + cust + util + FEE;
-    const market = Math.round((total * 1.21) / 10000) * 10000;
+    const market = Math.round((total - cust + custRF) / 10000) * 10000;
     $('#calcRub').textContent = `≈ ${rub(car)} по курсу 1 ${C.cur} = ${String(C.rate).replace('.', ',')} ₽`;
     tween(out('car'), car); tween(out('delivery'), C.delivery); tween(out('customs'), cust); tween(out('util'), util); tween(out('fee'), FEE);
     tween($('#calcTotal'), total);
@@ -252,23 +253,24 @@
 
   /* ---------- Каталог ---------- */
   const CARS = [
-    { name: 'BMW X5 xDrive30d', img: 'car-x5w', year: 2022, km: '35 000', fuel: 'Дизель', price: 6950000, st: 'stock', c: 'kr' },
-    { name: 'Mercedes-Benz GLE 300d', img: 'car-gle', year: 2023, km: '8 000', fuel: 'Дизель', price: 8200000, st: 'order', c: 'eu' },
-    { name: 'Kia K5', img: 'car-k5', year: 2022, km: '28 000', fuel: 'Бензин', price: 2450000, st: 'stock', c: 'kr' },
-    { name: 'Geely Preface', img: 'car-camry2', year: 2024, km: '6 000', fuel: 'Бензин', price: 2690000, st: 'order', c: 'cn' },
-    { name: 'BMW 5 Series 520d', img: 'car-bmw5', year: 2021, km: '64 000', fuel: 'Дизель', price: 4280000, st: 'stock', c: 'kr' },
-    { name: 'BMW 3 Series 320i', img: 'car-camry', year: 2022, km: '31 000', fuel: 'Бензин', price: 3690000, st: 'order', c: 'eu' },
-    { name: 'BMW 4 Gran Coupe', img: 'car-sonata', year: 2021, km: '42 000', fuel: 'Бензин', price: 4150000, st: 'stock', c: 'eu' },
-    { name: 'BMW 3 Series Touring', img: 'car-q7', year: 2021, km: '55 000', fuel: 'Дизель', price: 3390000, st: 'order', c: 'eu' },
+    { name: 'BMW X5 xDrive30d', img: 'car-x5w', year: 2022, km: '35 000', fuel: 'Дизель', price: 5900000, t: 'suv', c: 'kr' },
+    { name: 'Mercedes-Benz GLE 300d', img: 'car-gle', year: 2023, km: '8 000', fuel: 'Дизель', price: 7400000, t: 'suv', c: 'kr' },
+    { name: 'Kia K5', img: 'car-k5', year: 2022, km: '28 000', fuel: 'Бензин', price: 2150000, t: 'sedan', c: 'kr' },
+    { name: 'Geely Preface', img: 'car-camry2', year: 2025, km: 'новый', fuel: 'Бензин', price: 2190000, t: 'sedan', c: 'cn' },
+    { name: 'BMW 5 Series 520d', img: 'car-bmw5', year: 2021, km: '64 000', fuel: 'Дизель', price: 3990000, t: 'sedan', c: 'kr' },
+    { name: 'BMW 3 Series 320i', img: 'car-camry', year: 2022, km: '31 000', fuel: 'Бензин', price: 3290000, t: 'sedan', c: 'kr' },
+    { name: 'BMW 4 Gran Coupe', img: 'car-sonata', year: 2021, km: '42 000', fuel: 'Бензин', price: 3690000, t: 'sedan', c: 'kr' },
+    { name: 'BMW 3 Series Touring', img: 'car-q7', year: 2021, km: '55 000', fuel: 'Дизель', price: 2990000, t: 'wagon', c: 'kr' },
   ];
-  const flagOf = { cn: 'flag--cn', kr: 'flag--kr', eu: 'flag--eu' };
+  const typeName = { suv: 'Кроссовер', sedan: 'Седан', wagon: 'Универсал' };
+  const flagOf = { cn: 'flag--cn', kr: 'flag--kr', kg: 'flag--kg' };
   const carsEl = $('#cars');
   carsEl.innerHTML = CARS.map((c, i) => `
-    <article class="car reveal" data-i="${i}" data-st="${c.st}" data-c="${c.c}" tabindex="0">
+    <article class="car reveal" data-i="${i}" data-t="${c.t}" data-c="${c.c}" tabindex="0">
       <div class="car__media">
         <img src="assets/img/${c.img}.webp" alt="${c.name}" loading="lazy">
         <div class="car__badges">
-          <span class="tag ${c.st === 'stock' ? 'tag--blue' : 'tag--dark'}">${c.st === 'stock' ? 'В наличии' : 'Под заказ'}</span>
+          <span class="tag tag--dark">${typeName[c.t]}</span>
           <i class="flag ${flagOf[c.c]}"></i>
         </div>
       </div>
@@ -276,11 +278,11 @@
         <h3 class="car__name">${c.name}</h3>
         <div class="car__specs">
           <span><svg><use href="#i-clock"/></svg>${c.year}</span>
-          <span><svg><use href="#i-gauge"/></svg>${c.km} км</span>
+          <span><svg><use href="#i-gauge"/></svg>${c.km === 'новый' ? 'новый' : c.km + ' км'}</span>
           <span><svg><use href="#i-fuel"/></svg>${c.fuel}</span>
         </div>
         <div class="car__foot">
-          <div class="car__price"><small>${c.st === 'stock' ? 'цена в Воронеже' : 'под ключ от'}</small>${rub(c.price)}</div>
+          <div class="car__price"><small>под ключ от</small>${rub(c.price)}</div>
           <span class="round-btn"><svg><use href="#i-arrow"/></svg></span>
         </div>
       </div>
@@ -291,7 +293,7 @@
     $$('.chip').forEach((x) => x.classList.toggle('is-active', x === ch));
     const f = ch.dataset.f;
     $$('.car', carsEl).forEach((card) => {
-      const show = f === 'all' || card.dataset.st === f || card.dataset.c === f;
+      const show = f === 'all' || card.dataset.t === f || card.dataset.c === f;
       card.classList.toggle('is-hidden', !show);
       if (show) { card.classList.remove('is-in-anim'); card.classList.remove('is-in'); void card.offsetWidth; card.classList.add('is-in'); }
     });
@@ -310,12 +312,13 @@
     openModal(`
       <div class="vplayer" style="background-image:url(assets/img/${c.img}.webp)"></div>
       <div class="pdf">
-        <div style="display:flex;gap:10px;align-items:center"><span class="tag ${c.st === 'stock' ? 'tag--blue' : 'tag--dark'}">${c.st === 'stock' ? 'В наличии' : 'Под заказ'}</span><i class="flag ${flagOf[c.c]}"></i></div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="tag tag--blue">Под заказ</span><i class="flag ${flagOf[c.c]}"></i></div>
         <h3>${c.name}</h3>
-        <div class="car__specs"><span>${c.year} год</span><span>${c.km} км</span><span>${c.fuel}</span></div>
+        <div class="car__specs"><span>${c.year} год</span><span>${c.km === 'новый' ? 'новый' : c.km + ' км'}</span><span>${c.fuel}</span></div>
+        <p class="muted">Ориентировочная цена под ключ с растаможкой в Кыргызстане. Точную сумму рассчитает менеджер.</p>
         <div class="result-card__total">${rub(c.price)}</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <a href="#lead" class="btn btn--primary" data-close data-book="${c.name}">Забронировать <svg><use href="#i-arrow"/></svg></a>
+          <a href="#lead" class="btn btn--primary" data-close data-book="${c.name}">Хочу такой <svg><use href="#i-arrow"/></svg></a>
           <a href="#calc" class="btn btn--ghost" data-close>Рассчитать похожий</a>
         </div>
       </div>`);
@@ -348,29 +351,30 @@
 
   /* ---------- Кейсы ---------- */
   const CASES = [
-    { t: 'BMW X5 xDrive30d', c: 'kr', meta: '2021 · 52 000 км · дизель 3.0', price: 6200000, market: 7500000, days: '28 дней', img: 'case-x5' },
-    { t: 'Mercedes-Benz G 63 AMG', c: 'eu', meta: '2022 · 24 000 км · бензин 4.0', price: 12500000, market: 16800000, days: '41 день', img: 'case-g63' },
-    { t: 'BMW 5 Series 520d', c: 'kr', meta: '2021 · 64 000 км · дизель 2.0', price: 4300000, market: 5100000, days: '24 дня', img: 'case-ship' },
-    { t: 'Mercedes-Benz GLE 300d', c: 'eu', meta: '2023 · 8 000 км · дизель 2.0', price: 8150000, market: 9400000, days: '36 дней', img: 'case-gle' },
+    { t: 'Changan UNI-Z', c: 'cn', city: 'Челябинск', meta: 'Клиент — Филипп. Перевели деньги и на следующий день выкупили авто.', price: '1 475 000 ₽', sub: 'под ключ на КГ учёте', chips: ['Выкуп за 1 день'] },
+    { t: 'Voyah Free 318 · 2025', c: 'cn', city: 'Челябинск', meta: 'Клиент — Наталья. Оформили прописку и КГ номера в Бишкеке.', price: 'Выкуплен', sub: 'оплата через USDT', chips: ['КГ номера', 'Второе авто в семье'] },
+    { t: 'Toyota Highlander', c: null, city: 'Москва', meta: 'Клиент — Антон. Списали утильсбор, получили СБКТС и ЭПТС.', price: 'Выдан клиенту', sub: 'полный пакет документов', chips: ['СБКТС', 'ЭПТС'] },
+    { t: 'Geely Monjaro · 2026 MY', c: 'cn', city: 'Россия', meta: 'Клиент — Олег. Это уже его второй автомобиль у нас. Проверили перед покупкой.', price: 'Выкуплен', sub: 'белый, 26 модельный год', chips: ['Второй авто клиента', 'Проверка перед покупкой'] },
+    { t: 'Audi A5', c: null, city: 'Уфа', meta: 'Клиент — Артур забрал свой автомобиль 30 декабря.', price: 'Выдан клиенту', sub: 'под ключ на КГ учёте', chips: ['Выдача в Уфе'] },
+    { t: 'Toyota RAV4 2.0', c: 'cn', city: 'Россия', meta: 'Клиент — Сергей. Перевели денежные средства за автомобиль.', price: 'Выкуплен', sub: 'цвет — чёрный', chips: ['Выкуп'] },
   ];
-  const cname = { cn: 'Китай', kr: 'Корея', eu: 'Европа' };
-  const caseBox = $('.case'), caseImg = $('#caseImg'), dots = $('#caseDots');
+  const cname = { cn: 'Китай', kr: 'Корея' };
+  const caseBox = $('.case'), dots = $('#caseDots');
   let ci = 0, caseTimer;
-  dots.innerHTML = CASES.map((_, i) => `<button aria-label="Кейс ${i + 1}"${i ? '' : ' class="is-active"'}></button>`).join('');
+  dots.innerHTML = CASES.map((_, i) => `<button aria-label="Сделка ${i + 1}"${i ? '' : ' class="is-active"'}></button>`).join('');
+  function renderCase(k) {
+    $('#caseCountry').innerHTML = (k.c ? `<i class="flag ${flagOf[k.c]}"></i>${cname[k.c]} · ` : '<svg><use href="#i-pin"/></svg>') + k.city;
+    $('#caseTitle').textContent = k.t; $('#caseMeta').textContent = k.meta;
+    $('#casePrice').textContent = k.price; $('#caseMarket').textContent = k.sub;
+    $('#caseChips').innerHTML = k.chips.map((c) => `<span class="tag tag--green"><svg><use href="#i-check"/></svg>${c}</span>`).join('');
+  }
   function caseGo(n) {
     ci = (n + CASES.length) % CASES.length;
-    const k = CASES[ci];
-    caseBox.classList.add('is-swapping'); caseImg.classList.add('is-swapping');
+    caseBox.classList.add('is-swapping');
     setTimeout(() => {
-      caseImg.src = `assets/img/${k.img}.webp`;
-      $('#caseCountry').innerHTML = `<i class="flag ${flagOf[k.c]}"></i>${cname[k.c]}`;
-      $('#caseTitle').textContent = k.t; $('#caseMeta').textContent = k.meta;
-      $('#casePrice').textContent = rub(k.price); $('#caseMarket').textContent = rub(k.market);
-      $('#caseSave').textContent = rub(k.market - k.price); $('#caseDays').textContent = k.days;
+      renderCase(CASES[ci]);
       $$('button', dots).forEach((d, i) => d.classList.toggle('is-active', i === ci));
       caseBox.classList.remove('is-swapping');
-      caseImg.onload = () => caseImg.classList.remove('is-swapping');
-      if (caseImg.complete) caseImg.classList.remove('is-swapping');
     }, 350);
     restartCases();
   }
@@ -378,8 +382,8 @@
   $('#caseNext').addEventListener('click', () => caseGo(ci + 1));
   $('#casePrev').addEventListener('click', () => caseGo(ci - 1));
   $$('button', dots).forEach((d, i) => d.addEventListener('click', () => caseGo(i)));
+  renderCase(CASES[0]);
   restartCases();
-  CASES.forEach((k) => { const im = new Image(); im.src = `assets/img/${k.img}.webp`; });
 
   /* ---------- FAQ: плавное раскрытие ---------- */
   $$('.faq__item').forEach((d) => {
@@ -422,8 +426,8 @@
     <div class="vplayer" style="background-image:url(assets/img/hero-1.webp)">
       <div class="vplayer__inner">
         <span class="play-big"><svg><use href="#i-play"/></svg></span>
-        <b>Как AUTOFAST привозит авто под ключ</b>
-        <span class="muted">Здесь будет видео о компании — 1 минута</span>
+        <b>Как AUTO FAST привозит авто под ключ</b>
+        <span class="muted">Здесь будет видео с выкупа и выдачи авто</span>
       </div>
       <div class="vplayer__bar"><span></span></div>
     </div>`)));
@@ -437,10 +441,10 @@
         <div class="pdf__bar"><span id="pdfBar"></span></div>
         <div class="pdf__rows breakdown" style="border:0;padding:0">
           <div class="line"><span>Цена автомобиля</span><b>${rub(k.car)}</b></div>
-          <div class="line"><span>Доставка до Воронежа</span><b>${rub(k.delivery)}</b></div>
-          <div class="line"><span>Растаможка и пошлины</span><b>${rub(k.cust)}</b></div>
-          <div class="line"><span>Утилизационный сбор</span><b>${rub(k.util)}</b></div>
-          <div class="line"><span>Услуги AUTOFAST</span><b>${rub(k.fee)}</b></div>
+          <div class="line"><span>Доставка</span><b>${rub(k.delivery)}</b></div>
+          <div class="line"><span>Растаможка в Кыргызстане</span><b>${rub(k.cust)}</b></div>
+          <div class="line"><span>Утильсбор, СБКТС, ЭПТС</span><b>${rub(k.util)}</b></div>
+          <div class="line"><span>Услуги AUTO FAST</span><b>${rub(k.fee)}</b></div>
           <div class="line" style="font-size:18px"><span><b>Итого под ключ</b></span><b>${rub(k.total)}</b></div>
         </div>
         <div class="pdf__done" id="pdfDone" style="opacity:0;transition:opacity .4s">
@@ -488,7 +492,7 @@
     }, 900);
   });
   $$('#leadForm .input').forEach((i) => i.addEventListener('input', () => i.classList.remove('is-error')));
-  $('.js-calc-lead').addEventListener('click', () => setTimeout(() => toast('Цена зафиксирована на 3 дня', 'Оставьте контакты — пришлём договор'), 600));
+  $('.js-calc-lead').addEventListener('click', () => setTimeout(() => toast('Пришлём точный расчёт', 'Оставьте имя и телефон — менеджер свяжется с вами'), 600));
 
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
