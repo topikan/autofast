@@ -851,3 +851,10 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; bord
   .logo__word { font-size: 16px; letter-spacing: .12em; }
   .footer__mark { width: 260px; right: -40px; bottom: -40px; }
 }
+
+/* Горизонтальные слайдеры на телефоне: только горизонтальная прокрутка */
+@media (max-width: 640px) {
+  .cars, .offers, .reviews, .chips { overflow-y: hidden; overscroll-behavior-x: contain; touch-action: pan-x pan-y; }
+  .cars .car, .offers .offer, .reviews .review { transform: none !important; }
+  .cars .car.reveal, .offers .offer.reveal, .reviews .review.reveal { transform: none; }
+}
